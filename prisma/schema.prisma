@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account  {
+  @@map("db-ms-auth-accounts")
+
+  id  Int   @default(autoincrement()) @id
+  email String  @unique
+  password  String
+  role Role
+
+  // One to One relationship with account
+  admin Admin?
+
+  // One to Many relationship with agency
+  agency Agency @relation(fields: [agencyId], references: [id])
+  agencyId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Admin {
+  @@map("db-ms-auth-admins")
+
+  id  Int    @id @default(autoincrement())
+  firstname String
+  lastname String
+  birthDate DateTime
+  phoneNumber String
+  type ADMIN_TYPE
+
+  // One to One relationship with account
+  account Account @relation(fields: [accountId] , references: [id])
+  accountId Int
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Agency {
+  @@map("db-ms-auth-agency")
+
+  id    Int   @default(autoincrement()) @id
+  name String
+  email String
+  phoneNumber String
+
+  // One to Many relationship with account
+  accounts Account[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+}
+
+enum Role {
+  ADMIN
+  EMPLOYER
+  JOB_SEKER
+}
+
+enum ADMIN_TYPE {
+  SUPER_ADMIN
+  AGENCY_ADMIN
+  SUB_ADMIN
+}
+
+enum GENDER {
+  MALE
+  FEMALE
+}

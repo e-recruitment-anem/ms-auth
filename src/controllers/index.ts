@@ -1,4 +1,11 @@
-import { Request, Response } from 'express';
-export const getHello = (req: Request, res: Response) => {
-  res.send('hello wotld');
+import { authController } from "./auth.controllers";
+import { usersController } from "./users.controllers";
+import { agenciesController } from "./agencies.controllers";
+
+const controllers = {
+  authController,
+  usersController,
+  agenciesController,
 };
+
+export default controllers;
