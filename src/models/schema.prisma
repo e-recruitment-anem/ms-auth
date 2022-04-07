@@ -53,7 +53,8 @@ model Agency {
   phoneNumber String
 
   // One to Many relationship with account
-  accounts Account[]
+  accounts Account[] 
+  // accountId Int 
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
