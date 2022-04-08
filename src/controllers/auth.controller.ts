@@ -30,6 +30,19 @@ const getHello = async (req: Request, res: Response) => {
   return res.status(200).send(agencies);
 };
 
+const login = async (req: Request, res: Response) => {};
+const registerAdmin = async (req: Request, res: Response) => {};
+const registerJobSeeker = async (req: Request, res: Response) => {};
+const registerEmployer = async (req: Request, res: Response) => {};
+const forgetPassword = async (req: Request, res: Response) => {};
+const resetPassword = async (req: Request, res: Response) => {};
+
 export const authController = {
   getHello,
+  login,
+  registerAdmin,
+  registerEmployer,
+  registerJobSeeker,
+  forgetPassword,
+  resetPassword,
 };
