@@ -1,6 +1,6 @@
-const login = async () => {};
 const createAccount = async () => {};
 const editPassword = async () => {};
+const login = async () => {};
 const registerAdmin = async () => {};
 const registerJobSeeker = async () => {};
 const registerEmployer = async () => {};
