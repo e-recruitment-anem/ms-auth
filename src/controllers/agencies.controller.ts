@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+// import { Request, Response } from "express";
 
 // const getHello = (req: Request, res: Response) => {
 //   res.send("hello wotld");
