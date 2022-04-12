@@ -19,7 +19,7 @@ const getHello = async (req: Request, res: Response) => {
 
     res.status(200).send(agencies);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     res.send("error");
   }
 };

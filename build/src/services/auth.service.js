@@ -1,3 +1,4 @@
+"use strict";
 // const createAccount = async () => {};
 // const editPassword = async () => {};
 // const login = async () => {};
@@ -6,12 +7,14 @@
 // const registerEmployer = async () => {};
 // const forgetPassword = async () => {};
 // const resetPassword = async () => {};
-
-export const authService = {
-  // login,
-  // registerAdmin,
-  // registerJobSeeker,
-  // registerEmployer,
-  // forgetPassword,
-  // resetPassword,
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.authService = void 0;
+exports.authService = {
+// login,
+// registerAdmin,
+// registerJobSeeker,
+// registerEmployer,
+// forgetPassword,
+// resetPassword,
 };
+//# sourceMappingURL=auth.service.js.map

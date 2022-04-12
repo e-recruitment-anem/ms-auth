@@ -1,0 +1,11 @@
+version: "3"
+
+services:
+  ms-auth:
+    image: express-typescript-docker:latest
+    container_name: ms-auth-v1
+    restart: always
+    environment:
+      DATABASE_URL: postgres://nfiyndtgpcjsqr:1d13a3a1bafa0c3d289b2a2e3026783fe5b9c67bbf623c29274e1c5f3f8c50c9@ec2-34-242-84-130.eu-west-1.compute.amazonaws.com:5432/df7ufhqsv177pm
+    ports:
+      - "5000:5000"
