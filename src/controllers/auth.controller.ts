@@ -1,38 +1,27 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
-const { account } = new PrismaClient();
+const { agency } = new PrismaClient();
 
 const getHello = async (req: Request, res: Response) => {
-  // const ag = await agency.create({
-  //   data: {
-  //     email: "agence@gmail.com",
-  //     name: "agence",
-  //     phoneNumber: "055895696400",
-  //   },
-  // });
   try {
-    const acc = await account.create({
-      data: {
-        email: "a.zitouuuusjsuni@esi-sba",
-        password: "aaaaabbbbb",
-        role: "ADMIN",
-        agencyId: 9,
-      },
+    // await agency.create({
+    //   data: {
+    //     email: "aa",
+    //     name: "aa",
+    //     phoneNumber: "8888",
+    //   },
+    // });
+    const agencies = await agency.findMany({
+      // where: { id: 3 },
+      include: { accounts: true },
+      // select: { email: true, accounts: true },
     });
-    res.send(acc);
+
+    res.status(200).send(agencies);
   } catch (error) {
     console.log(error);
     res.send("error");
   }
-
-  // const agencies = await agency.findMany({
-  //   where: { id: 3 },
-  //   include: { accounts: true },
-  //   // select: { email: true, accounts: true },
-  // });
-  // agencies[0]
-  // throw new Error("codeError");
-  // return res.status(200).send(acc);
 };
 
 const login = async (req: Request, res: Response) => {};

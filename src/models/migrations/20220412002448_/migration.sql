@@ -36,7 +36,7 @@ CREATE TABLE "db-ms-auth-admins" (
 );
 
 -- CreateTable
-CREATE TABLE "Agency" (
+CREATE TABLE "db-ms-auth-agencies" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
@@ -44,7 +44,7 @@ CREATE TABLE "Agency" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Agency_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "db-ms-auth-agencies_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -54,7 +54,7 @@ CREATE UNIQUE INDEX "db-ms-auth-accounts_email_key" ON "db-ms-auth-accounts"("em
 CREATE UNIQUE INDEX "db-ms-auth-admins_accountId_key" ON "db-ms-auth-admins"("accountId");
 
 -- AddForeignKey
-ALTER TABLE "db-ms-auth-accounts" ADD CONSTRAINT "db-ms-auth-accounts_agencyId_fkey" FOREIGN KEY ("agencyId") REFERENCES "Agency"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "db-ms-auth-accounts" ADD CONSTRAINT "db-ms-auth-accounts_agencyId_fkey" FOREIGN KEY ("agencyId") REFERENCES "db-ms-auth-agencies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "db-ms-auth-admins" ADD CONSTRAINT "db-ms-auth-admins_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "db-ms-auth-accounts"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

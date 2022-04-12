@@ -45,7 +45,7 @@ model Admin {
 }
 
 model Agency {
-  @@map("db-ms-auth-agency")
+  @@map("db-ms-auth-agencies")
 
   id    Int   @default(autoincrement()) @id
   name String
