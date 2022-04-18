@@ -1,6 +1,5 @@
 import { agenciesService } from "./agencies.service";
-import { usersService } from "./users.service";
-import { authService } from "./auth.service";
+import { accountsService } from "./accounts.service";
 import { emailService } from "./email.service";
 
-export { authService, usersService, agenciesService, emailService };
+export { accountsService, agenciesService, emailService };

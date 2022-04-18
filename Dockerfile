@@ -8,6 +8,7 @@ COPY tsconfig.json ./tsconfig.json
 RUN npm run build
 RUN npm prune --production
 RUN npx prisma generate
+
 FROM node:14-alpine
 WORKDIR /srv/app
 COPY --from=BUILD_IMAGE /srv/app/build .
