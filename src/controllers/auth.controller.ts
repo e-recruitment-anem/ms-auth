@@ -1,15 +1,16 @@
 import { NextFunction, Request, Response } from "express";
 import { generate } from "generate-password";
+import { createClient } from "redis";
 import { accountsService } from "../services/index";
 import {
   UserWithThatEmailAlreadyExistsException,
   WrongCredentialsException,
+  InvalidTokenException,
 } from "../exceptions/index";
 import bcryptHelper from "../helpers/bcrypt.helper";
 import emailHelper from "../helpers/email.helper";
 import jwtHelper from "../helpers/jwt.helper";
 import { Account } from "@prisma/client";
-import { createClient } from "redis";
 
 // const redisURL = process.env.REDIS_URL;
 
@@ -19,6 +20,8 @@ client.connect();
 
 const getHello = async (req: Request, res: Response, next: NextFunction) => {
   const accounts: Account[] = await accountsService.findAccounts();
+  console.log(req.headers.cookie);
+
   // emailHelper.sendEmail("hee");
   await client.set("aymen", "zitouni");
   await client.set("aymennn", "zitounnni");
@@ -214,15 +217,13 @@ const verifyAccount = async (
   const { token } = req.params;
   const accountId = await client.get(token);
   if (!accountId) {
-    // throw an error
+    next(new InvalidTokenException());
   }
   const { email } = await accountsService.findAccountById(Number(accountId));
   const verifiedToken = await jwtHelper.verifyToken(token);
   if (email !== verifiedToken) {
-    // throw an error
+    next(new InvalidTokenException());
   }
-  console.log(verifiedToken);
-  console.log(accountId);
   // set email_verified to true
 
   res

@@ -6,10 +6,11 @@ import {
   CreateEmployerRequest,
   CreateJobSeekerRequest,
 } from "../schemas/auth.schema";
+import isAuth from "../middlewares/auth.middleware";
 
 const router = express.Router();
 
-router.post("/", authController.getHello);
+router.post("/", isAuth, authController.getHello);
 router.post("/login", authController.login);
 router.get("/forget-password", authController.forgetPassword);
 router.post("/reset-password", authController.resetPassword);

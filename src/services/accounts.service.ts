@@ -90,7 +90,7 @@ const createEmployer = async (jobSeeker) => {
 };
 
 const findAccounts = async (): Promise<Account[]> => {
-  await prisma.account.deleteMany();
+  // await prisma.account.deleteMany();
   const accounts = await prisma.account.findMany();
 
   return accounts;
