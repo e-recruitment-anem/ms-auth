@@ -1,10 +1,50 @@
-const sgMail = require("@sendgrid/mail");
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+import sgMail from "@sendgrid/mail";
+
+const senderEmail = process.env.SENDGRID_SENDER_EMAIL;
+const sendGridAPIKey = process.env.SENDGRID_API_KEY;
+
+sgMail.setApiKey(sendGridAPIKey);
+
+const sendVerificationEmail = async (token: string) => {
+  const msg = {
+    to: "aymenzitouni51@gmail.com", // Change to your recipient
+    from: senderEmail, // Change to your verified sender
+    subject: "Sending with SendGrid is Fun",
+    text: "and easy to do anywhere, even with Node.js",
+    html: `<div><a href='https://www.youtube.com/${token}'>verify your email</a></div>`,
+  };
+
+  try {
+    await sgMail.send(msg);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const sendAdminCreationEmail = async (
+  email: string,
+  password,
+  token: string
+) => {
+  const msg = {
+    to: "aymenzitouni51@gmail.com", // Change to your recipient
+    from: senderEmail, // Change to your verified sender
+    subject: "Sending with SendGrid is Fun",
+    text: "and easy to do anywhere, even with Node.js",
+    html: `<div><p>email : ${email}</p><p>password : ${password}</p><a href='https://www.youtube.com/${token}'>verify your email</a></div>`,
+  };
+
+  try {
+    await sgMail.send(msg);
+  } catch (error) {
+    console.error(error);
+  }
+};
 
 const sendEmail = async (token: string) => {
   const msg = {
     to: "aymenzitouni51@gmail.com", // Change to your recipient
-    from: process.env.SENDGRID_SENDER_EMAIL, // Change to your verified sender
+    from: senderEmail, // Change to your verified sender
     subject: "Sending with SendGrid is Fun",
     text: "and easy to do anywhere, even with Node.js",
     html: "<strong>and easy to do anywhere, even with Node.js</strong>",
@@ -19,5 +59,7 @@ const sendEmail = async (token: string) => {
 };
 
 export default {
+  sendVerificationEmail,
+  sendAdminCreationEmail,
   sendEmail,
 };

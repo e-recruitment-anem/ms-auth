@@ -11,6 +11,11 @@ const findAccountByEmail = async (email: string) => {
   return account;
 };
 
+const findAccountById = async (id: number) => {
+  let account = await prisma.account.findUnique({ where: { id } });
+  return account;
+};
+
 const createAdmin = async (admin) => {
   const {
     email,
@@ -23,7 +28,7 @@ const createAdmin = async (admin) => {
     type,
   } = admin;
 
-  await prisma.account.create({
+  const account = await prisma.account.create({
     data: {
       email,
       password,
@@ -45,6 +50,7 @@ const createAdmin = async (admin) => {
       },
     },
   });
+  return account;
 };
 
 const createJobSeeker = async (jobSeeker) => {
@@ -84,12 +90,15 @@ const createEmployer = async (jobSeeker) => {
 };
 
 const findAccounts = async (): Promise<Account[]> => {
+  await prisma.account.deleteMany();
   const accounts = await prisma.account.findMany();
+
   return accounts;
 };
 export const accountsService = {
   login,
   findAccountByEmail,
+  findAccountById,
   findAccounts,
   createAdmin,
   createJobSeeker,

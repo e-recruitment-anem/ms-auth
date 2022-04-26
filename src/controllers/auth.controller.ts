@@ -1,18 +1,64 @@
 import { NextFunction, Request, Response } from "express";
+import { generate } from "generate-password";
 import { accountsService } from "../services/index";
-import { UserWithThatEmailAlreadyExistsException } from "../exceptions/index";
+import {
+  UserWithThatEmailAlreadyExistsException,
+  WrongCredentialsException,
+} from "../exceptions/index";
 import bcryptHelper from "../helpers/bcrypt.helper";
 import emailHelper from "../helpers/email.helper";
 import jwtHelper from "../helpers/jwt.helper";
 import { Account } from "@prisma/client";
+import { createClient } from "redis";
+
+// const redisURL = process.env.REDIS_URL;
+
+const client = createClient();
+client.on("error", (err) => console.log("Redis Client Error", err));
+client.connect();
 
 const getHello = async (req: Request, res: Response, next: NextFunction) => {
   const accounts: Account[] = await accountsService.findAccounts();
-  emailHelper.sendEmail("hee");
-  res.send(accounts);
+  // emailHelper.sendEmail("hee");
+  await client.set("aymen", "zitouni");
+  await client.set("aymennn", "zitounnni");
+  const value = await client.get("aymennnnn");
+  console.log(
+    generate({ length: 10, lowercase: true, uppercase: true, numbers: true })
+  );
+
+  console.log(value);
+
+  res.send({
+    accounts,
+    value: generate({
+      length: 10,
+      lowercase: true,
+      uppercase: true,
+      numbers: true,
+    }),
+  });
 };
 
 const login = async (req: Request, res: Response, next: NextFunction) => {
+  const { email, password } = req.body;
+  const account = await accountsService.findAccountByEmail(email);
+  if (!account) {
+    next(new WrongCredentialsException());
+  }
+  const isPasswordMatching = bcryptHelper.comparePassword(
+    password,
+    account.password
+  );
+  if (!isPasswordMatching) {
+    next(new WrongCredentialsException());
+  }
+  account.password = undefined;
+  const tokenData = await jwtHelper.createToken(account);
+  res.setHeader(
+    "Set-Cookie",
+    `Authorization=${tokenData.token}; HttpOnly; Max-Age=${tokenData.expiresIn}`
+  );
   res.status(200).send();
 };
 
@@ -21,16 +67,8 @@ const registerAdmin = async (
   res: Response,
   next: NextFunction
 ) => {
-  const {
-    email,
-    password,
-    agencyId,
-    firstname,
-    lastname,
-    birthDate,
-    phoneNumber,
-    type,
-  } = req.body;
+  const { email, agencyId, firstname, lastname, birthDate, phoneNumber, type } =
+    req.body;
 
   // verify if there an account with this email
   let account = await accountsService.findAccountByEmail(email);
@@ -38,11 +76,17 @@ const registerAdmin = async (
     next(new UserWithThatEmailAlreadyExistsException(email));
   }
 
-  // crypt password
+  // generate &  crypt password
+  const password = generate({
+    length: 10,
+    lowercase: true,
+    uppercase: true,
+    numbers: true,
+  });
   const hashedPassword = bcryptHelper.hashPassword(password);
 
   // create admin account
-  await accountsService.createAdmin({
+  account = await accountsService.createAdmin({
     email,
     password: hashedPassword,
     agencyId,
@@ -55,13 +99,15 @@ const registerAdmin = async (
 
   // generate token & store it in the cache
   const tokenData = await jwtHelper.createToken(email);
-
-  console.log(tokenData);
+  await client.set(tokenData.token, String(account.id));
 
   // Send verfication email
-  await emailHelper.sendEmail(tokenData.token);
+  await emailHelper.sendAdminCreationEmail(email, password, tokenData.token);
 
-  res.status(200).send("success");
+  account.password = undefined;
+  res
+    .status(200)
+    .send({ message: "admin created successfuly;", body: account });
 };
 
 const registerJobSeeker = async (
@@ -77,7 +123,6 @@ const registerJobSeeker = async (
     // lastname,
     // birthDate,
     // phoneNumber,
-    // type,
   } = req.body;
 
   // verify if there an account with this email
@@ -103,9 +148,12 @@ const registerJobSeeker = async (
   const tokenData = await jwtHelper.createToken(email);
 
   // Send verfication email
-  await emailHelper.sendEmail(tokenData.token);
+  await emailHelper.sendVerificationEmail(tokenData.token);
 
-  res.status(200).send("success");
+  account.password = undefined;
+  res
+    .status(200)
+    .send({ message: "job-seeker created successfuly;", body: account });
 };
 
 const registerEmployer = async (
@@ -138,9 +186,12 @@ const registerEmployer = async (
   const tokenData = await jwtHelper.createToken(email);
 
   // Send verfication email
-  await emailHelper.sendEmail(tokenData.token);
+  await emailHelper.sendVerificationEmail(tokenData.token);
 
-  res.status(200).send("success");
+  account.password = undefined;
+  res
+    .status(200)
+    .send({ message: "employer created successfuly;", body: account });
 };
 
 const forgetPassword = async (
@@ -155,6 +206,30 @@ const resetPassword = async (
   next: NextFunction
 ) => {};
 
+const verifyAccount = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { token } = req.params;
+  const accountId = await client.get(token);
+  if (!accountId) {
+    // throw an error
+  }
+  const { email } = await accountsService.findAccountById(Number(accountId));
+  const verifiedToken = await jwtHelper.verifyToken(token);
+  if (email !== verifiedToken) {
+    // throw an error
+  }
+  console.log(verifiedToken);
+  console.log(accountId);
+  // set email_verified to true
+
+  res
+    .status(200)
+    .send({ message: "email was verified successfully", body: null });
+};
+
 export const authController = {
   getHello,
   login,
@@ -163,4 +238,5 @@ export const authController = {
   registerJobSeeker,
   forgetPassword,
   resetPassword,
+  verifyAccount,
 };
