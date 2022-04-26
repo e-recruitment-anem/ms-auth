@@ -1,11 +1,5 @@
-import { authController } from "./auth.controllers";
-import { usersController } from "./users.controllers";
-import { agenciesController } from "./agencies.controllers";
+import { authController } from "./auth.controller";
+import { usersController } from "./users.controller";
+import { agenciesController } from "./agencies.controller";
 
-const controllers = {
-  authController,
-  usersController,
-  agenciesController,
-};
-
-export default controllers;
+export { authController, usersController, agenciesController };
