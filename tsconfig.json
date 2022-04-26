@@ -18,14 +18,20 @@
     "noImplicitThis": false,
     "strictNullChecks": false,
     "outDir": "./build",
-    "baseUrl": "src",
+    "baseUrl": "./",
+    "rootDir": "./",
     "paths": {
-      "@services/*": ["src/services"],
-      "@tests/*": ["__tests__/*"],
-      "@config/*": ["src/config/*"],
-      "@domain/*": ["src/domain/*"],
-      "@controller/*": ["src/controller/*"],
-      "@middleware/*": ["src/middleware/*"]
+      "@src/*": ["src/*"],
+      "@controllers/*": ["src/controllers/*"],
+      "@routes/*": ["src/routes/*"],
+      "@services/*": ["src/services/*"],
+      "@middlewares/*": ["src/middlewares/*"],
+      "@exceptions/*": ["src/exceptions/*"],
+      "@helpers/*": ["src/helpers/*"],
+      "@models/*": ["src/models/*"],
+      "@schemas/*": ["src/schemas/*"],
+      "@configs/*": ["src/configs/*"],
+      "@tests/*": ["__tests__/*"]
     }
   },
   "include": ["src/**/*", "__tests__/**/*"],

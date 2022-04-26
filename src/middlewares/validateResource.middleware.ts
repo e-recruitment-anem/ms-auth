@@ -1,3 +1,4 @@
+import BadRequestException from "../exceptions/badRequest.exception";
 import { Request, Response, NextFunction } from "express";
 import { AnyZodObject } from "zod";
 
@@ -12,7 +13,7 @@ const validate =
       });
       next();
     } catch (e: any) {
-      return res.status(400).send(e.errors);
+      throw new BadRequestException(e.errors);
     }
   };
 
