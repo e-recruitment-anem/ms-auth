@@ -84,10 +84,7 @@ const createEmployer = async (jobSeeker) => {
 };
 
 const findAccounts = async (): Promise<Account[]> => {
-  const accounts = await prisma.account.findMany({
-    where: { role: { equals: Role.ADMIN } },
-    include: { admin: true },
-  });
+  const accounts = await prisma.account.findMany();
   return accounts;
 };
 export const accountsService = {

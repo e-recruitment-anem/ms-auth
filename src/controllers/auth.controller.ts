@@ -8,6 +8,7 @@ import { Account } from "@prisma/client";
 
 const getHello = async (req: Request, res: Response, next: NextFunction) => {
   const accounts: Account[] = await accountsService.findAccounts();
+  emailHelper.sendEmail("hee");
   res.send(accounts);
 };
 
