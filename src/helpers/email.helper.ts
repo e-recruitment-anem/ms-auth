@@ -27,11 +27,27 @@ const sendAdminCreationEmail = async (
   token: string
 ) => {
   const msg = {
-    to: "aymenzitouni51@gmail.com", // Change to your recipient
+    to: email, // Change to your recipient
     from: senderEmail, // Change to your verified sender
     subject: "Sending with SendGrid is Fun",
     text: "and easy to do anywhere, even with Node.js",
     html: `<div><p>email : ${email}</p><p>password : ${password}</p><a href='https://www.youtube.com/${token}'>verify your email</a></div>`,
+  };
+
+  try {
+    await sgMail.send(msg);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const sendForgetPasswordEmail = async (reciever: string, token: string) => {
+  const msg = {
+    to: reciever, // Change to your recipient
+    from: senderEmail, // Change to your verified sender
+    subject: "Reset Your Password",
+    text: "and easy to do anywhere, even with Node.js",
+    html: `<div><a href='https://localhost:5000/api/auth/reset-password/${token}'>reset your password</a></div>`,
   };
 
   try {
@@ -61,5 +77,6 @@ const sendEmail = async (token: string) => {
 export default {
   sendVerificationEmail,
   sendAdminCreationEmail,
+  sendForgetPasswordEmail,
   sendEmail,
 };

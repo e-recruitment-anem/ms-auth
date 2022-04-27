@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { generate } from "generate-password";
-import { createClient } from "redis";
+import _ from "lodash";
 import { accountsService } from "../services/index";
 import {
   UserWithThatEmailAlreadyExistsException,
@@ -11,21 +11,20 @@ import bcryptHelper from "../helpers/bcrypt.helper";
 import emailHelper from "../helpers/email.helper";
 import jwtHelper from "../helpers/jwt.helper";
 import { Account } from "@prisma/client";
+import redisHelper from "../helpers/redis.helper";
 
 // const redisURL = process.env.REDIS_URL;
-
-const client = createClient();
-client.on("error", (err) => console.log("Redis Client Error", err));
-client.connect();
 
 const getHello = async (req: Request, res: Response, next: NextFunction) => {
   const accounts: Account[] = await accountsService.findAccounts();
   console.log(req.headers.cookie);
 
+  await redisHelper.setItem("aymen", "zitouni");
+
   // emailHelper.sendEmail("hee");
-  await client.set("aymen", "zitouni");
-  await client.set("aymennn", "zitounnni");
-  const value = await client.get("aymennnnn");
+
+  await redisHelper.setItem("aymennn", "zitounnni");
+  const value = await redisHelper.getItem("aymennnnn");
   console.log(
     generate({ length: 10, lowercase: true, uppercase: true, numbers: true })
   );
@@ -102,7 +101,7 @@ const registerAdmin = async (
 
   // generate token & store it in the cache
   const tokenData = await jwtHelper.createToken(email);
-  await client.set(tokenData.token, String(account.id));
+  await redisHelper.setItem(tokenData.token, String(account.id));
 
   // Send verfication email
   await emailHelper.sendAdminCreationEmail(email, password, tokenData.token);
@@ -201,7 +200,24 @@ const forgetPassword = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {};
+) => {
+  const { email } = req.params;
+  const account = await accountsService.findAccountByEmail(email);
+  if (_.isNull(account) || _.isUndefined(account)) {
+    next(new WrongCredentialsException());
+  }
+  const tokenData = await jwtHelper.createToken({
+    id: account.id,
+    email: account.email,
+  });
+
+  redisHelper.setItem(`forget-password--${tokenData.token}`, account.email);
+  emailHelper.sendForgetPasswordEmail(email, tokenData.token);
+  res.status(200).send({
+    message: "reset password token was sent successfully",
+    body: null,
+  });
+};
 
 const resetPassword = async (
   req: Request,
@@ -215,7 +231,7 @@ const verifyAccount = async (
   next: NextFunction
 ) => {
   const { token } = req.params;
-  const accountId = await client.get(token);
+  const accountId = await redisHelper.getItem(token);
   if (!accountId) {
     next(new InvalidTokenException());
   }
