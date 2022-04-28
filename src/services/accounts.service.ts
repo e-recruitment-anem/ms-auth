@@ -95,11 +95,20 @@ const findAccounts = async (): Promise<Account[]> => {
 
   return accounts;
 };
+
+const findAndUpdatePasswordByEmail = async (
+  email: string,
+  hashedPassword: string
+) => {
+  console.log(email);
+  console.log(hashedPassword);
+};
 export const accountsService = {
   login,
   findAccountByEmail,
   findAccountById,
   findAccounts,
+  findAndUpdatePasswordByEmail,
   createAdmin,
   createJobSeeker,
   createEmployer,

@@ -12,13 +12,14 @@ import emailHelper from "../helpers/email.helper";
 import jwtHelper from "../helpers/jwt.helper";
 import { Account } from "@prisma/client";
 import redisHelper from "../helpers/redis.helper";
+import moment from "moment";
 
 // const redisURL = process.env.REDIS_URL;
 
 const getHello = async (req: Request, res: Response, next: NextFunction) => {
   const accounts: Account[] = await accountsService.findAccounts();
   console.log(req.headers.cookie);
-
+  console.log(moment("2022-08-01").toISOString());
   await redisHelper.setItem("aymen", "zitouni");
 
   // emailHelper.sendEmail("hee");
@@ -223,7 +224,27 @@ const resetPassword = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {};
+) => {
+  const { token } = req.params;
+  const { password, passwordConfirmation } = req.body;
+  const redisKey = `forget-password--${token}`;
+  const email = await redisHelper.getItem(redisKey);
+  if (_.isNull) next(new InvalidTokenException());
+  try {
+    const verifiedToken = await jwtHelper.verifyToken(token);
+    if (verifiedToken["email"] !== email) next(new InvalidTokenException());
+  } catch (error) {
+    next(new InvalidTokenException());
+  }
+  if (password !== passwordConfirmation) next(new WrongCredentialsException());
+  const hashedPassword = bcryptHelper.hashPassword(password);
+  await accountsService.findAndUpdatePasswordByEmail(email, hashedPassword);
+  await redisHelper.deleteItem(redisKey);
+  res.status(200).send({
+    message: "password was updated successfully",
+    bady: null,
+  });
+};
 
 const verifyAccount = async (
   req: Request,

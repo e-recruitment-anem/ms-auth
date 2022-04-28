@@ -15,4 +15,10 @@ const getItem = async (key: string): Promise<string> => {
   } catch (error) {}
 };
 
-export default { setItem, getItem };
+const deleteItem = async (key: string) => {
+  try {
+    await client.del(key);
+  } catch (error) {}
+};
+
+export default { setItem, getItem, deleteItem };
