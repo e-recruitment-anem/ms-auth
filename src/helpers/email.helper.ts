@@ -68,7 +68,6 @@ const sendEmail = async (token: string) => {
 
   try {
     await sgMail.send(msg);
-    console.log("Email sent");
   } catch (error) {
     console.error(error);
   }

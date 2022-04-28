@@ -1,10 +1,5 @@
-import { Account, PrismaClient, Role } from "@prisma/client";
-import HttpException from "../exceptions/http.exception";
+import { Account, Prisma, PrismaClient, Role } from "@prisma/client";
 const prisma = new PrismaClient();
-// const editPassword = async () => {};
-const login = async () => {
-  throw new HttpException(400, "aa", "bb");
-};
 
 const findAccountByEmail = async (email: string) => {
   let account = await prisma.account.findUnique({ where: { email } });
@@ -100,21 +95,32 @@ const findAndUpdatePasswordByEmail = async (
   email: string,
   hashedPassword: string
 ) => {
-  console.log(email);
-  console.log(hashedPassword);
+  return await prisma.account.update({
+    where: { email },
+    data: { password: hashedPassword },
+  });
 };
 
 const findAdminById = async (id: number) => {
   const admin = await prisma.admin.findUnique({ where: { accountId: id } });
   return admin;
 };
+
+const findAdmins = async (filter: Prisma.AccountWhereInput) => {
+  const admin = await prisma.account.findMany({
+    where: filter,
+    include: { admin: true },
+  });
+  return admin;
+};
+
 export const accountsService = {
-  login,
   findAccountByEmail,
   findAccountById,
   findAccounts,
   findAndUpdatePasswordByEmail,
   findAdminById,
+  findAdmins,
   createAdmin,
   createJobSeeker,
   createEmployer,

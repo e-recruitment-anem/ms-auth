@@ -6,7 +6,6 @@ import { NotAuthenticatedException } from "../exceptions";
 
 const isAuth = async (req: Request, res: Response, next: NextFunction) => {
   const { cookie } = req.headers;
-  console.log("@isAuth");
   if (_.isNull(cookie) || _.isUndefined(cookie)) {
     next(new NotAuthenticatedException());
   } else {
