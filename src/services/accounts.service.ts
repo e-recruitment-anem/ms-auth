@@ -103,12 +103,18 @@ const findAndUpdatePasswordByEmail = async (
   console.log(email);
   console.log(hashedPassword);
 };
+
+const findAdminById = async (id: number) => {
+  const admin = await prisma.admin.findUnique({ where: { accountId: id } });
+  return admin;
+};
 export const accountsService = {
   login,
   findAccountByEmail,
   findAccountById,
   findAccounts,
   findAndUpdatePasswordByEmail,
+  findAdminById,
   createAdmin,
   createJobSeeker,
   createEmployer,

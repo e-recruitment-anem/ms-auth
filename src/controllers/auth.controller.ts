@@ -12,25 +12,23 @@ import emailHelper from "../helpers/email.helper";
 import jwtHelper from "../helpers/jwt.helper";
 import { Account } from "@prisma/client";
 import redisHelper from "../helpers/redis.helper";
-import moment from "moment";
-
-// const redisURL = process.env.REDIS_URL;
+// import moment from "moment";
 
 const getHello = async (req: Request, res: Response, next: NextFunction) => {
   const accounts: Account[] = await accountsService.findAccounts();
-  console.log(req.headers.cookie);
-  console.log(moment("2022-08-01").toISOString());
-  await redisHelper.setItem("aymen", "zitouni");
+  // console.log(req.headers.cookie);
+  // console.log(moment("2022-08-01").toISOString());
+  // await redisHelper.setItem("aymen", "zitouni");
 
   // emailHelper.sendEmail("hee");
 
-  await redisHelper.setItem("aymennn", "zitounnni");
-  const value = await redisHelper.getItem("aymennnnn");
-  console.log(
-    generate({ length: 10, lowercase: true, uppercase: true, numbers: true })
-  );
+  // await redisHelper.setItem("aymennn", "zitounnni");
+  // const value = await redisHelper.getItem("aymennnnn");
+  // console.log(
+  //   generate({ length: 10, lowercase: true, uppercase: true, numbers: true })
+  // );
 
-  console.log(value);
+  // console.log(value);
 
   res.send({
     accounts,

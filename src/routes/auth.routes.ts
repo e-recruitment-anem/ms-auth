@@ -1,3 +1,4 @@
+import { checkAdminRole, checkRole, isAuth } from "../middlewares";
 import express from "express";
 import { authController } from "../controllers";
 import validate from "../middlewares/validateResource.middleware";
@@ -6,11 +7,17 @@ import {
   CreateEmployerRequest,
   CreateJobSeekerRequest,
 } from "../schemas/auth.schema";
-// import isAuth from "../middlewares/auth.middleware";
+// import { Role } from "@prisma/client";
 
 const router = express.Router();
 
-router.post("/", authController.getHello);
+router.post(
+  "/",
+  isAuth,
+  checkRole(["ADMIN"]),
+  checkAdminRole(["AGENCY_ADMIN"]),
+  authController.getHello
+);
 router.post("/login", authController.login);
 router.get("/forget-password/:email", authController.forgetPassword);
 router.post("/reset-password/:token", authController.resetPassword);
