@@ -1,5 +1,5 @@
 import { ADMIN_TYPE, Prisma, Role } from "@prisma/client";
-import { InvalidTokenException } from "../exceptions";
+import { BadRequestException, ItemNotFoundException } from "../exceptions";
 import { NextFunction, Request, Response } from "express";
 import _ from "lodash";
 import moment from "moment";
@@ -7,9 +7,11 @@ import { accountsService } from "../services";
 
 const getHello = async (req: Request, res: Response) => {};
 const deleteAccount = async (req: Request, res: Response) => {};
-const getAdmin = async (req: Request, res: Response) => {
-  // const { id } = req.params;
-  return [];
+const getAdmin = async (req: Request, res: Response, next: NextFunction) => {
+  const { id } = req.params;
+  const admin = await accountsService.findAdminById(Number(id));
+  if (_.isNull(admin)) next(new ItemNotFoundException());
+  res.status(200).send({ message: "admin found", body: admin });
 };
 const getAdmins = async (req: Request, res: Response, next: NextFunction) => {
   const {
@@ -67,7 +69,7 @@ const getAdmins = async (req: Request, res: Response, next: NextFunction) => {
     const admins = await accountsService.findAdmins(filter);
     res.status(200).send({ message: "admins list", body: admins });
   } catch (error) {
-    next(new InvalidTokenException());
+    next(new BadRequestException(""));
   }
 };
 

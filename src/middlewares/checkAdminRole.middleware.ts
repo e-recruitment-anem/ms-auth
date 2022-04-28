@@ -6,8 +6,8 @@ import { NotAuthorizedException } from "../exceptions";
 const checkAdminRole = (roles: ADMIN_TYPE[]) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     const { id } = res.locals.account;
-    const { type } = await accountsService.findAdminById(id);
-    if (!roles.includes(type)) next(new NotAuthorizedException());
+    const account = await accountsService.findAdminById(id);
+    if (!roles.includes(account["type"])) next(new NotAuthorizedException());
     next();
   };
 };

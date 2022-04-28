@@ -102,13 +102,18 @@ const findAndUpdatePasswordByEmail = async (
 };
 
 const findAdminById = async (id: number) => {
-  const admin = await prisma.admin.findUnique({ where: { accountId: id } });
-  return admin;
+  let account = await prisma.account.findUnique({
+    where: { id },
+    include: { admin: true },
+  });
+  account = { ...account, ...account.admin };
+  account.admin = undefined;
+  return account;
 };
 
 const findAdmins = async (filter: Prisma.AccountWhereInput) => {
   const admin = await prisma.account.findMany({
-    where: filter,
+    where: { ...filter, admin: { birthDate: {} } },
     include: { admin: true },
   });
   return admin;

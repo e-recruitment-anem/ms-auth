@@ -4,6 +4,7 @@ import ItemNotFoundException from "./notFound.exception";
 import WrongCredentialsException from "./wrongCredentials.exception";
 import UserWithThatEmailAlreadyExistsException from "./userWithThatEmailAlreadyExistsException.exception";
 import InvalidTokenException from "./invalidTokenException.exception";
+import BadRequestException from "./badRequest.exception";
 
 export {
   NotAuthenticatedException,
@@ -12,4 +13,5 @@ export {
   WrongCredentialsException,
   UserWithThatEmailAlreadyExistsException,
   InvalidTokenException,
+  BadRequestException,
 };
