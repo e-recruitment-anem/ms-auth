@@ -12,6 +12,7 @@ model Account  {
 
   id  Int   @default(autoincrement()) @id
   email String  @unique
+  emailVreified Boolean @default(false)
   password  String
   role Role
 

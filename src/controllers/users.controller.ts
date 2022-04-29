@@ -1,18 +1,32 @@
-import { ADMIN_TYPE, Prisma, Role } from "@prisma/client";
+import { ADMIN_TYPE, Prisma, Role, PrismaClient } from "@prisma/client";
 import { BadRequestException, ItemNotFoundException } from "../exceptions";
 import { NextFunction, Request, Response } from "express";
 import _ from "lodash";
 import moment from "moment";
 import { accountsService } from "../services";
 
-const getHello = async (req: Request, res: Response) => {};
-const deleteAccount = async (req: Request, res: Response) => {};
+const prisma = new PrismaClient();
+
+const getHello = async (req: Request, res: Response) => {
+  await prisma.account.deleteMany();
+  await prisma.admin.deleteMany();
+  await prisma.agency.deleteMany();
+  res.send("deleted db");
+};
+
+const deleteAccount = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  await accountsService.deleteAccount(Number(id));
+  res.status(200).send({ message: "account deleted successfully", body: null });
+};
+
 const getAdmin = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.params;
   const admin = await accountsService.findAdminById(Number(id));
   if (_.isNull(admin)) next(new ItemNotFoundException());
   res.status(200).send({ message: "admin found", body: admin });
 };
+
 const getAdmins = async (req: Request, res: Response, next: NextFunction) => {
   const {
     agency = null,
@@ -24,11 +38,12 @@ const getAdmins = async (req: Request, res: Response, next: NextFunction) => {
     birthDate_lte = null,
     phoneNumber = null,
     type = null,
+    page = 1,
+    itemsPerPage = 50,
   } = req.query;
   let filter: Prisma.AccountWhereInput = {};
   filter.role = Role.ADMIN;
   filter.admin = {};
-
   if (!_.isNull(agency)) {
     filter.agencyId = {};
     filter.agencyId.equals = Number(agency);
@@ -66,7 +81,11 @@ const getAdmins = async (req: Request, res: Response, next: NextFunction) => {
       filter.admin.birthDate.lte = String(birthDate_lte);
   }
   try {
-    const admins = await accountsService.findAdmins(filter);
+    const admins = await accountsService.findAdmins(
+      filter,
+      Number(page),
+      Number(itemsPerPage)
+    );
     res.status(200).send({ message: "admins list", body: admins });
   } catch (error) {
     next(new BadRequestException(""));

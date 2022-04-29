@@ -3,6 +3,7 @@ import express from "express";
 
 const router = express.Router();
 // delete account
+
 router.delete("/:id", usersController.deleteAccount);
 
 router.get("/admins", usersController.getAdmins);

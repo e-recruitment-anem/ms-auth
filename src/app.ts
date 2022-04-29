@@ -5,6 +5,7 @@ import morgan from "morgan";
 import * as dotenv from "dotenv";
 import { Router } from "./routes";
 import errorMiddleware from "./middlewares/error.middleware";
+import swaggerDocs from "./helpers/swagger.helper";
 
 const app = express();
 dotenv.config();
@@ -26,4 +27,5 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(`server is listening to port ${PORT}`);
+  swaggerDocs(app, Number(PORT));
 });

@@ -111,22 +111,33 @@ const findAdminById = async (id: number) => {
   return account;
 };
 
-const findAdmins = async (filter: Prisma.AccountWhereInput) => {
+const findAdmins = async (
+  filter: Prisma.AccountWhereInput,
+  page: number = 1,
+  itemsPerPage: number = 50
+) => {
   const admin = await prisma.account.findMany({
     where: { ...filter, admin: { birthDate: {} } },
     include: { admin: true },
+    take: itemsPerPage,
+    skip: itemsPerPage * (page - 1),
   });
   return admin;
 };
 
+const deleteAccount = async (id: number) => {
+  await prisma.account.delete({ where: { id }, include: { admin: false } });
+};
+
 export const accountsService = {
+  createAdmin,
+  createJobSeeker,
+  createEmployer,
   findAccountByEmail,
   findAccountById,
   findAccounts,
   findAndUpdatePasswordByEmail,
   findAdminById,
   findAdmins,
-  createAdmin,
-  createJobSeeker,
-  createEmployer,
+  deleteAccount,
 };
