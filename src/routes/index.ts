@@ -7,6 +7,6 @@ const router = express.Router();
 
 router.use("/auth", authRouter);
 router.use("/users", usersRouter);
-router.use("/auth", agenciesRouter);
+router.use("/agencies", agenciesRouter);
 
 export { router as Router };
