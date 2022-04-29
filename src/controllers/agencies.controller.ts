@@ -2,7 +2,7 @@ import { Prisma } from "@prisma/client";
 import { BadRequestException, ItemNotFoundException } from "../exceptions";
 import { NextFunction, Request, Response } from "express";
 import _ from "lodash";
-import { agenciesService } from "../services";
+import { accountsService, agenciesService } from "../services";
 
 const getHello = async (req: Request, res: Response, next: NextFunction) => {
   res.send("hello wotld");
@@ -102,7 +102,13 @@ const getAgencies = async (req: Request, res: Response, next: NextFunction) => {
 
 const addAdminToAgency = async (req: Request, res: Response) => {
   const { adminId, agencyId } = req.params;
-  console.log(adminId, agencyId);
+  const admin = await accountsService.updateAccount(Number(adminId), {
+    agency: { connect: { id: Number(agencyId) } },
+  });
+  res.status(200).send({
+    message: "admin agency updated successfuly",
+    body: admin,
+  });
 };
 
 export const agenciesController = {

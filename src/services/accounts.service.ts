@@ -129,6 +129,13 @@ const deleteAccount = async (id: number) => {
   await prisma.account.delete({ where: { id }, include: { admin: false } });
 };
 
+const updateAccount = async (
+  id: number,
+  account: Prisma.AccountUpdateInput
+): Promise<Account> => {
+  return await prisma.account.update({ where: { id }, data: { ...account } });
+};
+
 export const accountsService = {
   createAdmin,
   createJobSeeker,
@@ -140,4 +147,5 @@ export const accountsService = {
   findAdminById,
   findAdmins,
   deleteAccount,
+  updateAccount,
 };
