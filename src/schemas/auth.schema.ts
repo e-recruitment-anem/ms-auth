@@ -6,10 +6,6 @@ export const CreateAdminRequest = object({
     email: string({
       required_error: "email is required",
     }),
-    password: string({
-      required_error: "password is required",
-    }),
-
     type: nativeEnum(ADMIN_TYPE),
     agencyId: number({
       required_error: "agecncy is required",
@@ -65,6 +61,49 @@ export const CreateEmployerRequest = object({
     }),
     agencyId: number({
       required_error: "agecncy is required",
+    }),
+  }),
+});
+
+export const loginRequest = object({
+  body: object({
+    email: string({
+      required_error: "email is required",
+    }),
+    password: string({
+      required_error: "password is required",
+    }),
+  }),
+});
+
+export const forgetPasswordRequest = object({
+  params: object({
+    email: string({
+      required_error: "email is required",
+    }),
+  }),
+});
+
+export const resetPasswordRequest = object({
+  params: object({
+    token: string({
+      required_error: "email is required",
+    }),
+  }),
+  body: object({
+    password: string({
+      required_error: "password is required",
+    }),
+    passwordConfirmation: string({
+      required_error: "passwordConfirmation is required",
+    }),
+  }),
+});
+
+export const verifyAccount = object({
+  params: object({
+    token: string({
+      required_error: "token is required",
     }),
   }),
 });
