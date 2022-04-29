@@ -6,7 +6,6 @@ import {
   UserWithThatEmailAlreadyExistsException,
   WrongCredentialsException,
   InvalidTokenException,
-  ItemNotFoundException,
   BadRequestException,
 } from "../exceptions/index";
 import bcryptHelper from "../helpers/bcrypt.helper";

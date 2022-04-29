@@ -5,9 +5,9 @@ COPY package*.json ./
 RUN npm install
 COPY src ./src
 COPY tsconfig.json ./tsconfig.json
+RUN npx prisma generate
 RUN npm run build
 RUN npm prune --production
-RUN npx prisma generate
 
 FROM node:14-alpine
 WORKDIR /srv/app
