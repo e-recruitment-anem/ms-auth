@@ -1,11 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 import { generate } from "generate-password";
 import _ from "lodash";
-import { accountsService } from "../services/index";
+import { accountsService, agenciesService } from "../services/index";
 import {
   UserWithThatEmailAlreadyExistsException,
   WrongCredentialsException,
   InvalidTokenException,
+  ItemNotFoundException,
+  BadRequestException,
 } from "../exceptions/index";
 import bcryptHelper from "../helpers/bcrypt.helper";
 import emailHelper from "../helpers/email.helper";
@@ -71,6 +73,11 @@ const registerAdmin = async (
   const { email, agencyId, firstname, lastname, birthDate, phoneNumber, type } =
     req.body;
 
+  // verify if this agency exists
+  const agency = await agenciesService.findAgencyById(Number(agencyId));
+  if (_.isNull(agency))
+    next(new BadRequestException("this agency doesn't exist."));
+
   // verify if there an account with this email
   let account = await accountsService.findAccountByEmail(email);
   if (account) {
@@ -126,6 +133,11 @@ const registerJobSeeker = async (
     // phoneNumber,
   } = req.body;
 
+  // verify if this agency exists
+  const agency = await agenciesService.findAgencyById(Number(agencyId));
+  if (_.isNull(agency))
+    next(new BadRequestException("this agency doesn't exist."));
+
   // verify if there an account with this email
   let account = await accountsService.findAccountByEmail(email);
   if (account) {
@@ -163,6 +175,11 @@ const registerEmployer = async (
   next: NextFunction
 ) => {
   const { email, password, agencyId } = req.body;
+
+  // verify if this agency exists
+  const agency = await agenciesService.findAgencyById(Number(agencyId));
+  if (_.isNull(agency))
+    next(new BadRequestException("this agency doesn't exist."));
 
   // verify if there an account with this email
   let account = await accountsService.findAccountByEmail(email);
