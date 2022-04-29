@@ -13,7 +13,7 @@ model Account  {
   id  Int   @default(autoincrement()) @id
   email String  @unique
   emailVreified Boolean @default(false)
-  password  String
+  password  String 
   role Role
 
   // One to One relationship with account

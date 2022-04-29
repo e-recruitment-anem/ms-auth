@@ -89,25 +89,42 @@ const getAgencies = async (req: Request, res: Response, next: NextFunction) => {
   }
 
   try {
-    const agencies = await agenciesService.findAgencies(
+    const { agencies, count } = await agenciesService.findAgencies(
       filter,
       Number(page),
       Number(itemsPerPage)
     );
-    res.status(200).send({ message: "agencies list", body: agencies });
+    res.status(200).send({
+      message: "agencies list",
+      body: {
+        page: Number(page),
+        pages: Math.ceil(count / Number(itemsPerPage)),
+        itemsPerPage: Number(itemsPerPage),
+        total: count,
+        items: agencies,
+      },
+    });
   } catch (error) {
     next(new BadRequestException(""));
   }
 };
 
-const addAdminToAgency = async (req: Request, res: Response) => {
+const addAdminToAgency = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { adminId, agencyId } = req.params;
-  const admin = await accountsService.updateAccount(Number(adminId), {
+  let admin = await accountsService.findAdminById(Number(adminId));
+  if (!admin) next(new ItemNotFoundException());
+  let agency = await agenciesService.findAgencyById(Number(agencyId));
+  if (!agency) next(new ItemNotFoundException());
+  let updatedAdmin = await accountsService.updateAccount(Number(adminId), {
     agency: { connect: { id: Number(agencyId) } },
   });
   res.status(200).send({
     message: "admin agency updated successfuly",
-    body: admin,
+    body: updatedAdmin,
   });
 };
 

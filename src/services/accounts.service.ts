@@ -1,13 +1,23 @@
-import { Account, Prisma, PrismaClient, Role } from "@prisma/client";
+import {
+  Account,
+  Prisma,
+  PrismaClient,
+  // PrismaPromise,
+  Role,
+} from "@prisma/client";
+
 const prisma = new PrismaClient();
 
 const findAccountByEmail = async (email: string) => {
   let account = await prisma.account.findUnique({ where: { email } });
+
   return account;
 };
 
 const findAccountById = async (id: number) => {
   let account = await prisma.account.findUnique({ where: { id } });
+  account.password = undefined;
+
   return account;
 };
 
@@ -45,6 +55,8 @@ const createAdmin = async (admin) => {
       },
     },
   });
+  account.password = undefined;
+
   return account;
 };
 
@@ -63,6 +75,8 @@ const createJobSeeker = async (jobSeeker) => {
       },
     },
   });
+  account.password = undefined;
+
   return account;
 };
 
@@ -81,6 +95,7 @@ const createEmployer = async (jobSeeker) => {
       },
     },
   });
+  account.password = undefined;
   return account;
 };
 
@@ -116,24 +131,28 @@ const findAdmins = async (
   page: number = 1,
   itemsPerPage: number = 50
 ) => {
-  const admin = await prisma.account.findMany({
-    where: { ...filter, admin: { birthDate: {} } },
+  const admins = await prisma.account.findMany({
+    where: { ...filter },
     include: { admin: true },
     take: itemsPerPage,
     skip: itemsPerPage * (page - 1),
   });
-  return admin;
+  const count = await prisma.account.count();
+  admins.forEach((admin) => (admin.password = undefined));
+
+  return { admins, count };
 };
 
 const deleteAccount = async (id: number) => {
   await prisma.account.delete({ where: { id }, include: { admin: false } });
 };
 
-const updateAccount = async (
-  id: number,
-  account: Prisma.AccountUpdateInput
-): Promise<Account> => {
-  return await prisma.account.update({ where: { id }, data: { ...account } });
+const updateAccount = async (id: number, account: any): Promise<Account> => {
+  const updatedAccount = await prisma.account.update({
+    where: { id },
+    data: { ...account },
+  });
+  return updatedAccount;
 };
 
 export const accountsService = {

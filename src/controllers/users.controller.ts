@@ -81,12 +81,21 @@ const getAdmins = async (req: Request, res: Response, next: NextFunction) => {
       filter.admin.birthDate.lte = String(birthDate_lte);
   }
   try {
-    const admins = await accountsService.findAdmins(
+    const { admins, count } = await accountsService.findAdmins(
       filter,
       Number(page),
       Number(itemsPerPage)
     );
-    res.status(200).send({ message: "admins list", body: admins });
+    res.status(200).send({
+      message: "admins list",
+      body: {
+        page: Number(page),
+        pages: Math.ceil(count / Number(itemsPerPage)),
+        itemsPerPage: Number(itemsPerPage),
+        total: count,
+        items: admins,
+      },
+    });
   } catch (error) {
     next(new BadRequestException(""));
   }

@@ -30,12 +30,17 @@ const findAgencies = async (
   filter: Prisma.AgencyWhereInput,
   page: number = 1,
   itemsPerPage: number = 50
-): Promise<Agency[]> => {
-  return await prisma.agency.findMany({
+): Promise<{
+  agencies: Agency[];
+  count: number;
+}> => {
+  const agencies = await prisma.agency.findMany({
     where: { ...filter },
     take: itemsPerPage,
     skip: itemsPerPage * (page - 1),
   });
+  const count = await prisma.agency.count();
+  return { agencies, count };
 };
 
 export const agenciesService = {
