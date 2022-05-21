@@ -45,6 +45,24 @@ export const CreateJobSeekerRequest = object({
     birthDate: string({
       required_error: "birthDate is required",
     }).optional(),
+    birthPlace: string({
+      required_error: "birthPlace is required",
+    }).optional(),
+    gender: string({
+      required_error: "gender is required",
+    }).optional(),
+    address: string({
+      required_error: "address is required",
+    }).optional(),
+    postalCode: string({
+      required_error: "postalCode is required",
+    }).optional(),
+    residenceCity: number({
+      required_error: "residenceCity is required",
+    }).optional(),
+    nationality: string({
+      required_error: "nationality is required",
+    }).optional(),
     phoneNumber: string({
       required_error: "phoneNumber is required",
     }),

@@ -6,6 +6,7 @@ import * as dotenv from "dotenv";
 import { Router } from "./routes";
 import errorMiddleware from "./middlewares/error.middleware";
 import swaggerDocs from "./helpers/swagger.helper";
+import brokerHelper from "./helpers/broker.helper";
 
 const app = express();
 dotenv.config();
@@ -22,6 +23,8 @@ app.use(compression());
 app.use(cors());
 app.use("/api", Router);
 app.use(errorMiddleware);
+
+brokerHelper.checkConnection();
 
 const PORT = process.env.PORT || 5000;
 

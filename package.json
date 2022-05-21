@@ -51,6 +51,7 @@
     "express": "^4.17.2",
     "generate-password": "^1.7.0",
     "jsonwebtoken": "^8.5.1",
+    "kafka-node": "^5.0.0",
     "loadash": "^1.0.0",
     "moment": "^2.29.3",
     "morgan": "^1.10.0",

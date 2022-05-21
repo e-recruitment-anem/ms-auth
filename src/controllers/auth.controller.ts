@@ -13,6 +13,7 @@ import emailHelper from "../helpers/email.helper";
 import jwtHelper from "../helpers/jwt.helper";
 import { Account } from "@prisma/client";
 import redisHelper from "../helpers/redis.helper";
+import brokerHelper from "../helpers/broker.helper";
 // import moment from "moment";
 
 const getHello = async (req: Request, res: Response, next: NextFunction) => {
@@ -126,10 +127,16 @@ const registerJobSeeker = async (
     email,
     password,
     agencyId,
-    // firstname,
-    // lastname,
-    // birthDate,
-    // phoneNumber,
+    firstname,
+    lastname,
+    gender,
+    birthDate,
+    birthPlace,
+    address,
+    postalCode,
+    residenceCity,
+    nationality,
+    phoneNumber,
   } = req.body;
 
   // verify if this agency exists
@@ -154,7 +161,22 @@ const registerJobSeeker = async (
   });
 
   // push job-seeker-account creation to kafka broker
-  // account.id
+  await brokerHelper.sendMessage(
+    "job-seekers.create",
+    JSON.stringify({
+      id: account.id,
+      firstname,
+      lastname,
+      gender,
+      birthDate,
+      birthPlace,
+      address,
+      postalCode,
+      residenceCity,
+      nationality,
+      phoneNumber,
+    })
+  );
 
   // generate token & store it in the cache
   const tokenData = await jwtHelper.createToken(email);
