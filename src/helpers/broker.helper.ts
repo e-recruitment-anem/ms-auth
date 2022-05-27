@@ -3,7 +3,7 @@ import { Producer, KafkaClient } from "kafka-node";
 let client = new KafkaClient({ kafkaHost: process.env.KAFKA_HOST });
 let producer = new Producer(client);
 
-const checkConnection = () => {
+const checkConnection = async () => {
   producer.on("ready", () => {
     console.log("kafka borker established successfully.");
   });
@@ -14,7 +14,7 @@ const checkConnection = () => {
 
 const sendMessage = async (topic: string, payload: string) => {
   try {
-    producer.send(
+    const result = await producer.send(
       [
         {
           topic,
@@ -25,6 +25,7 @@ const sendMessage = async (topic: string, payload: string) => {
         console.log(`message pushed to topic ${topic} successfully.`);
       }
     );
+    console.log(result);
   } catch (error) {
     console.log(`error heppened while pushing to ropic : ${topic}.`);
   }

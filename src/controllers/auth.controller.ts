@@ -14,7 +14,6 @@ import jwtHelper from "../helpers/jwt.helper";
 import { Account } from "@prisma/client";
 import redisHelper from "../helpers/redis.helper";
 import brokerHelper from "../helpers/broker.helper";
-// import moment from "moment";
 
 const getHello = async (req: Request, res: Response, next: NextFunction) => {
   const accounts: Account[] = await accountsService.findAccounts();
@@ -142,12 +141,12 @@ const registerJobSeeker = async (
   // verify if this agency exists
   const agency = await agenciesService.findAgencyById(Number(agencyId));
   if (_.isNull(agency))
-    next(new BadRequestException("this agency doesn't exist."));
+    return next(new BadRequestException("this agency doesn't exist."));
 
   // verify if there an account with this email
   let account = await accountsService.findAccountByEmail(email);
   if (account) {
-    next(new UserWithThatEmailAlreadyExistsException(email));
+    return next(new UserWithThatEmailAlreadyExistsException(email));
   }
 
   // crypt password
@@ -162,11 +161,11 @@ const registerJobSeeker = async (
 
   // push job-seeker-account creation to kafka broker
   await brokerHelper.sendMessage(
-    "job-seekers.create",
+    "job-seekers.create-job-seeker",
     JSON.stringify({
-      id: account.id,
-      firstname,
-      lastname,
+      idJobSeeker: account.id,
+      firstName: firstname,
+      lastName: lastname,
       gender,
       birthDate,
       birthPlace,
@@ -185,7 +184,7 @@ const registerJobSeeker = async (
   await emailHelper.sendVerificationEmail(tokenData.token);
 
   account.password = undefined;
-  res
+  return res
     .status(200)
     .send({ message: "job-seeker created successfuly;", body: account });
 };
