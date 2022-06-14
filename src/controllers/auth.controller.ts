@@ -57,10 +57,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
   }
   account.password = undefined;
   const tokenData = await jwtHelper.createToken(account);
-  res.setHeader(
-    "Set-Cookie",
-    `Authorization=${tokenData.token}; HttpOnly; Max-Age=${tokenData.expiresIn}`
-  );
+  res.cookie("Bearer", tokenData.token);
   res.status(200).send();
 };
 
