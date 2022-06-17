@@ -1,19 +1,19 @@
-import { NextFunction, Request, Response } from "express";
-import { generate } from "generate-password";
-import _ from "lodash";
-import { accountsService, agenciesService } from "../services/index";
+import { NextFunction, Request, Response } from 'express';
+import { generate } from 'generate-password';
+import _ from 'lodash';
+import { accountsService, agenciesService } from '../services/index';
 import {
   UserWithThatEmailAlreadyExistsException,
   WrongCredentialsException,
   InvalidTokenException,
   BadRequestException,
-} from "../exceptions/index";
-import bcryptHelper from "../helpers/bcrypt.helper";
-import emailHelper from "../helpers/email.helper";
-import jwtHelper from "../helpers/jwt.helper";
-import { Account } from "@prisma/client";
-import redisHelper from "../helpers/redis.helper";
-import brokerHelper from "../helpers/broker.helper";
+} from '../exceptions/index';
+import bcryptHelper from '../helpers/bcrypt.helper';
+import emailHelper from '../helpers/email.helper';
+import jwtHelper from '../helpers/jwt.helper';
+import { Account } from '@prisma/client';
+import redisHelper from '../helpers/redis.helper';
+import brokerHelper from '../helpers/broker.helper';
 
 const getHello = async (req: Request, res: Response, next: NextFunction) => {
   const accounts: Account[] = await accountsService.findAccounts();
@@ -57,8 +57,8 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
   }
   account.password = undefined;
   const tokenData = await jwtHelper.createToken(account);
-  res.cookie("Bearer", tokenData.token);
-  res.status(200).send();
+  res.cookie('Bearer', tokenData.token);
+  res.status(200).send(account);
 };
 
 const registerAdmin = async (
@@ -111,7 +111,7 @@ const registerAdmin = async (
   account.password = undefined;
   res
     .status(200)
-    .send({ message: "admin created successfuly;", body: account });
+    .send({ message: 'admin created successfuly;', body: account });
 };
 
 const registerJobSeeker = async (
@@ -158,7 +158,7 @@ const registerJobSeeker = async (
 
   // push job-seeker-account creation to kafka broker
   await brokerHelper.sendMessage(
-    "job-seekers.create-job-seeker",
+    'job-seekers.create-job-seeker',
     JSON.stringify({
       idJobSeeker: account.id,
       firstName: firstname,
@@ -183,7 +183,7 @@ const registerJobSeeker = async (
   account.password = undefined;
   return res
     .status(200)
-    .send({ message: "job-seeker created successfuly;", body: account });
+    .send({ message: 'job-seeker created successfuly;', body: account });
 };
 
 const registerEmployer = async (
@@ -226,7 +226,7 @@ const registerEmployer = async (
   account.password = undefined;
   res
     .status(200)
-    .send({ message: "employer created successfuly;", body: account });
+    .send({ message: 'employer created successfuly;', body: account });
 };
 
 const forgetPassword = async (
@@ -247,7 +247,7 @@ const forgetPassword = async (
   redisHelper.setItem(`forget-password--${tokenData.token}`, account.email);
   emailHelper.sendForgetPasswordEmail(email, tokenData.token);
   res.status(200).send({
-    message: "reset password token was sent successfully",
+    message: 'reset password token was sent successfully',
     body: null,
   });
 };
@@ -264,7 +264,7 @@ const resetPassword = async (
   if (_.isNull) next(new InvalidTokenException());
   try {
     const verifiedToken = await jwtHelper.verifyToken(token);
-    if (verifiedToken["email"] !== email) next(new InvalidTokenException());
+    if (verifiedToken['email'] !== email) next(new InvalidTokenException());
   } catch (error) {
     next(new InvalidTokenException());
   }
@@ -273,7 +273,7 @@ const resetPassword = async (
   await accountsService.findAndUpdatePasswordByEmail(email, hashedPassword);
   await redisHelper.deleteItem(redisKey);
   res.status(200).send({
-    message: "password was updated successfully",
+    message: 'password was updated successfully',
     bady: null,
   });
 };
@@ -297,7 +297,12 @@ const verifyAccount = async (
 
   res
     .status(200)
-    .send({ message: "email was verified successfully", body: null });
+    .send({ message: 'email was verified successfully', body: null });
+};
+
+const getAuth = async (req: Request, res: Response, next: NextFunction) => {
+  const { account } = res.locals;
+  res.status(200).json({ status: 'success', body: account });
 };
 
 export const authController = {
@@ -309,4 +314,5 @@ export const authController = {
   forgetPassword,
   resetPassword,
   verifyAccount,
+  getAuth,
 };
