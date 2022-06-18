@@ -198,7 +198,18 @@ const registerEmployer = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { email, password, agencyId } = req.body;
+  const {
+    email,
+    password,
+    agencyId,
+    name,
+    phoneNumber,
+    postalCode,
+    fax,
+    biography,
+    mainActivity,
+    state,
+  } = req.body;
 
   // verify if this agency exists
   const agency = await agenciesService.findAgencyById(Number(agencyId));
@@ -220,6 +231,23 @@ const registerEmployer = async (
     password: hashedPassword,
     agencyId,
   });
+
+  await brokerHelper.sendMessage(
+    "employers.create-employer",
+    JSON.stringify({
+      id: account.id,
+      email,
+      password,
+      agencyId,
+      name,
+      phoneNumber,
+      postalCode,
+      fax,
+      biography,
+      mainActivity,
+      state,
+    })
+  );
 
   // push employer-account creation to kafka broker
   // account.id
