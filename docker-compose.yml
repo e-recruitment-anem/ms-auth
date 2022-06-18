@@ -9,24 +9,24 @@ services:
     command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
     volumes:
       - cache:/data
-  e-recruitment-ms-auth:
-    container_name: e-recruitment-ms-auth
-    image: aymenzitouni/e-recruitment-ms-auth:1.1.0
-    depends_on:
-      - cache
-    environment:
-      PORT: ${PORT}
-      NODE_ENV: ${NODE_ENV}
-      SENDGRID_API_KEY: ${SENDGRID_API_KEY}
-      SENDGRID_SENDER_EMAIL: ${SENDGRID_SENDER_EMAIL}
-      DATABASE_URL: ${DATABASE_URL}
-      REDIS_HOST: ${REDIS_HOSTNAME}
-      REDIS_PORT: ${REDIS_PORT}
-      REDIS_PASSWORD: ${REDIS_PASSWORD}
-      KAFKA_HOST: 127.0.0.1:9092
-    ports:
-      - "5000:5000"
-    restart: always
+  # e-recruitment-ms-auth:
+  #   container_name: e-recruitment-ms-auth
+  #   image: aymenzitouni/e-recruitment-ms-auth:1.1.0
+  #   depends_on:
+  #     - cache
+  #   environment:
+  #     PORT: ${PORT}
+  #     NODE_ENV: ${NODE_ENV}
+  #     SENDGRID_API_KEY: ${SENDGRID_API_KEY}
+  #     SENDGRID_SENDER_EMAIL: ${SENDGRID_SENDER_EMAIL}
+  #     DATABASE_URL: ${DATABASE_URL}
+  #     REDIS_HOST: ${REDIS_HOSTNAME}
+  #     REDIS_PORT: ${REDIS_PORT}
+  #     REDIS_PASSWORD: ${REDIS_PASSWORD}
+  #     KAFKA_HOST: 127.0.0.1:9092
+  #   ports:
+  #     - "5000:5000"
+  #   restart: always
 
 volumes:
   cache:

@@ -37,6 +37,7 @@ router.post(
   validate(CreateAdminRequest),
   authController.registerAdmin
 );
+router.get('/get-auth', isAuth, authController.getAuth)
 router.get("/verify-account/:token", authController.verifyAccount);
 
 export { router as authRouter };
