@@ -11,6 +11,7 @@ import {
 
 const router = express.Router();
 
+router.get("/", isAuth, authController.getAuth);
 router.post(
   "/",
   isAuth,

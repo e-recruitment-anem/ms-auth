@@ -24,7 +24,7 @@ const createToken = async (dataStoredInToken: object): Promise<TokenData> => {
 
 const verifyToken = async (token: string): Promise<string | JwtPayload> => {
   let verifiedToken = jwt.verify(token, secret);
-  console.log(verifiedToken);
+
   return verifiedToken;
 };
 

@@ -6,13 +6,15 @@ import { NotAuthenticatedException } from "../exceptions";
 
 const isAuth = async (req: Request, res: Response, next: NextFunction) => {
   const { Bearer: cookie = "" } = req.cookies;
+
   if (_.isNull(cookie) || _.isUndefined(cookie) || cookie === "") {
     next(new NotAuthenticatedException());
   } else {
     try {
       const verifiedToken = await jwtHelper.verifyToken(cookie);
+
       const account = await accountsService.findAccountById(
-        verifiedToken["id"]
+        verifiedToken["data"]["id"]
       );
       if (_.isNull(account) || _.isUndefined(account)) {
         next(new NotAuthenticatedException());

@@ -3,6 +3,7 @@ import compression from "compression";
 import cors from "cors";
 import morgan from "morgan";
 import * as dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 import { Router } from "./routes";
 import errorMiddleware from "./middlewares/error.middleware";
 import swaggerDocs from "./helpers/swagger.helper";
@@ -19,6 +20,7 @@ if (process.env.NODE_ENV === "development") {
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use(cookieParser());
 app.use(compression());
 app.use(cors());
 app.use("/api", Router);

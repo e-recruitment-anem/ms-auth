@@ -3,7 +3,7 @@ import { createClient } from "redis";
 const client = createClient({
   url: `redis://${process.env.REDIS_USERNAME}:${process.env.REDIS_PASSWORD}@${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
 });
-client.on("error", (err) => console.log("Redis Client Error", err));
+client.on("error", (err) => {});
 client.connect();
 
 const setItem = async (key: string, value: string) => {

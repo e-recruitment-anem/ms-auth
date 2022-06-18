@@ -42,6 +42,11 @@ const getHello = async (req: Request, res: Response, next: NextFunction) => {
   });
 };
 
+const getAuth = async (req: Request, res: Response, next: NextFunction) => {
+  const { account } = res.locals;
+  res.send({ message: "account found.", body: { ...account } });
+};
+
 const login = async (req: Request, res: Response, next: NextFunction) => {
   const { email, password } = req.body;
   const account = await accountsService.findAccountByEmail(email);
@@ -58,7 +63,9 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
   account.password = undefined;
   const tokenData = await jwtHelper.createToken(account);
   res.cookie("Bearer", tokenData.token);
-  res.status(200).send();
+  res
+    .status(200)
+    .send({ message: "logged in successfully", body: { ...account } });
 };
 
 const registerAdmin = async (
@@ -303,6 +310,7 @@ const verifyAccount = async (
 export const authController = {
   getHello,
   login,
+  getAuth,
   registerAdmin,
   registerEmployer,
   registerJobSeeker,
